@@ -21,11 +21,11 @@ public class Person {
         }
     }
 
-    String name;
-    LocalDate birthday;
-    Gender gender;
-    String emailAddress;
-    public static List<Person> roster = new ArrayList<>();
+    private String name;
+    private LocalDate birthday;
+    private Gender gender;
+    private String emailAddress;
+    private  static List<Person> roster = new ArrayList<>();
 
     public Person(String name, LocalDate birthday, Gender gender, String emailAddress) {
         this.name = name;
@@ -51,8 +51,8 @@ public class Person {
         this.birthday = birthday;
     }
 
-    public Gender getGender() {
-        return gender;
+    public String getGender() {
+        return gender.text;
     }
 
     public void setGender(Gender gender) {
@@ -74,7 +74,7 @@ public class Person {
         return 0;
     }
 
-    public List<Person> getRoster() {
+    public static List<Person> getRoster() {
         return roster;
     }
 
@@ -87,7 +87,7 @@ public class Person {
     }
     @Override
     public String toString() {
-        String person = String.format("Name: %s\nBirthDay: %s\nAge: %s\nGender: %s\nEmail: %s\n", name, birthday, this.getAge(), gender, emailAddress);
+        String person = String.format("Name: %s\nBirthDay: %s\nAge: %s\nGender: %s\nEmail: %s\n", name, birthday, this.getAge(), this.getGender(), emailAddress);
         return person;
     }
 
@@ -105,7 +105,7 @@ public class Person {
 
         @Override
         public boolean test(Person person) {
-            if (person.getGender() == Gender.MALE || person.getGender() == Gender.FEMALE || person.getGender() == Gender.NONBINARY)
+            if (person.getGender().equals("Male") || person.getGender().equals("Female") || person.getGender().equals("Non-binary"))
                 return true;
             return false;
         }
