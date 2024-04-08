@@ -1,6 +1,9 @@
 package rocks.zipcode.lambdas;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 public class Person {
 
@@ -22,12 +25,14 @@ public class Person {
     LocalDate birthday;
     Gender gender;
     String emailAddress;
+    public static List<Person> roster = new ArrayList<>();
 
     public Person(String name, LocalDate birthday, Gender gender, String emailAddress) {
         this.name = name;
         this.birthday = birthday;
         this.gender = gender;
         this.emailAddress = emailAddress;
+        roster.add(this);
     }
 
     public String getName() {
@@ -59,22 +64,67 @@ public class Person {
     }
 
     public void setEmailAddress(String emailAddress) {
-        String emailRegex = "^(.+)@(.+)$";
-        Pattern emailPattern = Pattern.compile(emailRegex);
+        this.emailAddress = emailAddress;
+    }
 
-        try {
-            if (emailPattern.matcher(emailAddress).matches()) {
-                this.emailAddress = emailAddress;
-            }
-            else {
-                System.out.println("Email format must be:\n[username][@][domain]");
+    public int getAge() {
+        if (birthday != null) {
+            return Period.between(this.birthday, LocalDate.now()).getYears();
+        }
+        return 0;
+    }
+
+    public List<Person> getRoster() {
+        return roster;
+    }
+
+    public static void printPersons(List<Person> roster, CheckPerson tester) {
+        for (Person p : roster) {
+            if (tester.test(p)) {
+                System.out.println(p.toString());
             }
         }
-        catch (NullPointerException e) {
+    }
+    @Override
+    public String toString() {
+        String person = String.format("Name: %s\nBirthDay: %s\nAge: %s\nGender: %s\nEmail: %s\n", name, birthday, this.getAge(), gender, emailAddress);
+        return person;
+    }
+
+    static class validateAdult implements CheckPerson {
+        @Override
+        public boolean test(Person person) {
+            if (person.getAge() >= 18)
+                return true;
+
+            return false;
         }
     }
 
-    public void printPerson() {
-    }
+    static class checkGender implements CheckPerson {
 
+        @Override
+        public boolean test(Person person) {
+            if (person.getGender() == Gender.MALE || person.getGender() == Gender.FEMALE || person.getGender() == Gender.NONBINARY)
+                return true;
+            return false;
+        }
+    }
+    static class checkEmail implements CheckPerson {
+
+        @Override
+        public boolean test(Person person) {
+            String emailRegex = "^(.+)@(.+)$";
+            Pattern emailPattern = Pattern.compile(emailRegex);
+
+            try {
+                if (emailPattern.matcher(person.emailAddress).matches())
+                    return true;
+
+            } catch (NullPointerException e) {
+            }
+            System.out.println("Email format must be:\n[username][@][domain]");
+            return false;
+        }
+    }
 }
